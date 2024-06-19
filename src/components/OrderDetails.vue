@@ -1,31 +1,33 @@
 <template>
-  <q-card>
-    <h2>Детали заявки</h2>
-    <div v-if="order">
-      <p><strong>ID:</strong> {{ order.id }}</p>
-      <p><strong>Номер:</strong> {{ order.num }}</p>
-      <p><strong>Дата добавления:</strong> {{ formatDate(order.dadd) }}</p>
-      <p><strong>Профиль ID:</strong> {{ order.profile_id }}</p>
-      <p><strong>Статус:</strong> {{ order.state }}</p>
-      <p><strong>Последнее обновление:</strong> {{ formatDate(order.lastUpd) }}</p>
-      <p><strong>Продукт:</strong> {{ order.stg.join(', ') }}</p>
-      <p><strong>ИНН:</strong> {{ order.inn }}</p>
-      <p><strong>Телефон:</strong> {{ order.person_phone }}</p>
-      <p><strong>Тип компании:</strong> {{ order.company_type }}</p>
-      <p><strong>Email:</strong> {{ order.person_email }}</p>
-      <p><strong>Источник CRM:</strong> {{ order.extra.crm_source_type }}</p>
-      <div v-if="order.extra && order.extra.partner">
-        <h3>Партнер</h3>
-        <p><strong>Тип:</strong> {{ order.extra.partner.type }}</p>
-        <p><strong>User ID:</strong> {{ order.extra.partner.user_id }}</p>
-        <p><strong>Имя клиента:</strong> {{ order.extra.partner.client_name }}</p>
-        <p><strong>ИНН:</strong> {{ order.extra.partner.inn }}</p>
+  <q-card class="order-details-card">
+    <div class="order-details-container">
+      <h5>Детали заявки</h5>
+      <div v-if="order">
+        <p><strong>ID:</strong> {{ order.id }}</p>
+        <p><strong>Номер:</strong> {{ order.num }}</p>
+        <p><strong>Дата добавления:</strong> {{ formatDate(order.dadd) }}</p>
+        <p><strong>Профиль ID:</strong> {{ order.profile_id }}</p>
+        <p><strong>Статус:</strong> {{ order.state }}</p>
+        <p><strong>Последнее обновление:</strong> {{ formatDate(order.lastUpd) }}</p>
+        <p><strong>Продукт:</strong> {{ order.stg.join(', ') }}</p>
+        <p><strong>ИНН:</strong> {{ order.inn }}</p>
+        <p><strong>Телефон:</strong> {{ order.person_phone }}</p>
+        <p><strong>Тип компании:</strong> {{ order.company_type }}</p>
+        <p><strong>Email:</strong> {{ order.person_email }}</p>
+        <p><strong>Источник CRM:</strong> {{ order.extra.crm_source_type }}</p>
+        <div v-if="order.extra && order.extra.partner">
+          <h6>Партнер</h6>
+          <p><strong>Тип:</strong> {{ order.extra.partner.type }}</p>
+          <p><strong>User ID:</strong> {{ order.extra.partner.user_id }}</p>
+          <p><strong>Имя клиента:</strong> {{ order.extra.partner.client_name }}</p>
+          <p><strong>ИНН:</strong> {{ order.extra.partner.inn }}</p>
+        </div>
       </div>
-    </div>
-    <div v-else>
-      <div class="no-data-message">
-        <p v-if="isNewOrder">Извините, данных по новым заявкам на сервере нет :(</p>
-        <p v-else>Загрузка данных...</p>
+      <div v-else>
+        <div class="no-data-message">
+          <p v-if="isNewOrder">Извините, данных по новым заявкам на сервере нет :(</p>
+          <p v-else>Загрузка данных...</p>
+        </div>
       </div>
     </div>
   </q-card>
@@ -76,13 +78,23 @@ export default {
 </script>
 
 <style scoped>
-.container {
-  padding: 20px;
+.order-details-card {
+  max-width: 70%; 
+  margin: 0 auto; 
+  padding: 20px; 
 }
 
-h2 {
+.order-details-container {
+  max-width: 600px; 
+  margin: 0 auto;
+}
+
+h5 {
   margin-bottom: 20px;
-  text-align: center;
+}
+
+h6 {
+  margin-bottom: 20px;
 }
 
 .no-data-message {

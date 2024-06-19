@@ -23,7 +23,7 @@
       </template>
       <template v-slot:body-cell-num="props">
         <q-td :props="props">
-          <div @click="selectOrder(props.row.id, props.row.num)" style="cursor: pointer;">
+          <div @click="selectOrder(props.row.id, props.row.num)" class="clickable">
             {{ props.row.num }}
           </div>
         </q-td>
@@ -47,7 +47,8 @@ const columns = [
 ];
 
 export default {
-  setup(_, { emit }) {
+  props: ['onSelectOrder'],
+  setup(props, { emit }) {
     const store = useStore();
     const rows = computed(() => store.state.ordersList);
 
@@ -62,7 +63,7 @@ export default {
     };
 
     const selectOrder = (orderId, num) => {
-      emit('select-order', { orderId, num });
+      props.onSelectOrder({ orderId, num });
     };
 
     onMounted(() => {

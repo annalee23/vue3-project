@@ -15,8 +15,10 @@
         </q-toolbar>
 
         <q-page>
-          <router-view />
+          <router-view @select-order="addOrderTab" />
         </q-page>
+
+     
       </div>
     </q-page-container>
   </q-layout>
@@ -25,9 +27,11 @@
 <script>
 import { ref, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import MyApplications from '@/components/MyApplications.vue';
-import MyAccounts from '@/components/MyAccounts.vue';
-import OrderDetails from '@/components/OrderDetails.vue';
+import { markRaw } from 'vue';
+
+const MyApplications = markRaw(require('@/components/MyApplications.vue').default);
+const MyAccounts = markRaw(require('@/components/MyAccounts.vue').default);
+const OrderDetails = markRaw(require('@/components/OrderDetails.vue').default);
 
 
 export default {
