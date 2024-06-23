@@ -1,6 +1,17 @@
 <template>
   <div class="q-pa-md">
-    <q-table title="Список заявок" :rows="rows" :columns="columns" row-key="num">
+    <q-table :rows="rows" :columns="columns" row-key="num">
+
+      <template v-slot:top>
+        <q-td colspan="7">
+          <div class="q-table__title">
+            <span class="title-text">Список заявок</span>
+            <q-btn class="my-4" color="primary" @click="openDialog()">Добавить заявку</q-btn>
+          </div>
+        </q-td>
+      </template>
+
+
       <template v-slot:body-cell-state="props">
         <q-td :props="props" :class="statusClass(props.row.state)">
           {{ props.row.state }}
@@ -15,7 +26,7 @@
 
       <template v-slot:body-cell-dadd="props">
         <q-td :props="props">
-          <span>{{ props.row.dadd }}</span>
+          <span>{{ formatDate(props.row.dadd) }}</span>
         </q-td>
       </template>
 
@@ -38,7 +49,7 @@
     <DialogDelete :dialog="dialogDelete" @close="closeDialog" @confirm="deleteItem"
       @update:dialog="val => dialogDelete = val" />
     <DialogEditCreate :dialog="dialog" :editedItem="editedItem" :dialogTitle="dialogTitle" @save="saveItem"
-      @close="closeDialog" />
+      @close="closeDialog" @update:dialog="val => dialog = val" />
 
   </div>
 </template>
@@ -156,6 +167,7 @@ export default {
       if (editedIndex.value > -1) {
         Object.assign(rows.value[editedIndex.value], localEditedItem);
       } else {
+        localEditedItem.id = nextId.value++; 
         store.commit('addNewItem', localEditedItem);
       }
       closeDialog();
@@ -184,6 +196,7 @@ export default {
       dialogDelete,
       dialogTitle,
       editedItem,
+      formatDate,
       statusClass,
       selectOrder,
       openDialog,
@@ -230,5 +243,19 @@ export default {
 tr:hover {
   background-color: #f5f5f5;
   /* Светло-серый */
+}
+
+.q-table__title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.q-table__title .title-text {
+  flex: 1;
+}
+
+.q-table__title q-btn {
+  margin-top: 8px;
 }
 </style>
