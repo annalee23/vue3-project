@@ -18,7 +18,10 @@ export default createStore({
       }));
     },
     addNewItem(state, item) {
+      // state.ordersList.push(item);
+      console.log('Adding new item (Store):', item); // Логирование
       state.ordersList.push(item);
+      console.log('Updated ordersList (Store):', state.ordersList);
     },
     setMeetingsList(state, meetings) {
       state.meetingsList = meetings;
@@ -40,7 +43,6 @@ export default createStore({
     async fetchMeetingsList({ commit }) {
       try {
         const response = await axios.get('https://my-json-server.typicode.com/plushevy/demo/meetings');
-        // console.log('Meetings loaded:', response.data); 
         commit('setMeetingsList', response.data);
       } catch (error) {
         console.error('Ошибка при загрузке списка встреч:', error);
@@ -50,7 +52,7 @@ export default createStore({
     async fetchOrderDetails({ commit }, orderId) {
       try {
         const response = await axios.get(`https://my-json-server.typicode.com/plushevy/demo/orders/${orderId}`);
-        console.log('Orders details loaded:', response.data); 
+        console.log('Orders details loaded:', response.data);
         commit('setCurrentOrder', response.data);
       } catch (error) {
         console.error('Ошибка при загрузке данных заявки:', error);

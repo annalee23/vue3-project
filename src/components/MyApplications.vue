@@ -1,12 +1,12 @@
 <template>
   <div class="q-pa-md">
-    <q-table :rows="rows" :columns="columns" row-key="num">
+    <q-table :rows="rows" :columns="columns" row-key="num" :pagination.sync="pagination">
 
       <template v-slot:top>
         <q-td colspan="7">
           <div class="q-table__title">
             <span class="title-text">Список заявок</span>
-            <q-btn class="my-4" color="primary" @click="openDialog()">Добавить заявку</q-btn>
+            <q-btn class="btn-create" color="primary" @click="openDialog()">Добавить заявку</q-btn>
           </div>
         </q-td>
       </template>
@@ -82,6 +82,7 @@ export default {
   setup(props, { emit }) {
     const store = useStore();
     const rows = computed(() => store.state.ordersList);
+
     const dialog = ref(false);
     const dialogDelete = ref(false);
     const dialogTitle = ref("Создать заявку");
@@ -106,6 +107,8 @@ export default {
     };
     const dialogMode = ref('create'); // 'create', 'edit', 'delete'
     const nextId = ref(6);
+    const pagination = ref({ page: 1, rowsPerPage: 10 }); 
+
 
     watch(dialog, (val) => {
       if (!val) closeDialog();
@@ -164,12 +167,13 @@ export default {
     };
 
     const saveItem = (localEditedItem) => {
+      console.log('Saving item (MyApp):', localEditedItem); 
       if (editedIndex.value > -1) {
         Object.assign(rows.value[editedIndex.value], localEditedItem);
       } else {
-        localEditedItem.id = nextId.value++; 
         store.commit('addNewItem', localEditedItem);
       }
+      console.log('Current rows (MyApp):', rows.value); 
       closeDialog();
     };
 
@@ -203,7 +207,8 @@ export default {
       closeDialog,
       saveItem,
       editItem,
-      deleteItem
+      deleteItem,
+      pagination
     };
   }
 };
@@ -243,6 +248,12 @@ export default {
 tr:hover {
   background-color: #f5f5f5;
   /* Светло-серый */
+}
+
+.btn-create {
+  /* margin-left: 580px; */
+  position: absolute;
+  right: 0.3cm;
 }
 
 .q-table__title {
