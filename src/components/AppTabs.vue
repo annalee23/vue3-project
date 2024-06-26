@@ -5,20 +5,14 @@
         <q-toolbar class="bg-purple text-white shadow-2 rounded-borders">
           <q-space />
           <q-tabs v-model="activeTab" shrink stretch>
-            <q-tab
-              v-for="tab in tabs"
-              :key="tab.name"
-              :name="tab.name"
-              :label="tab.label"
-            />
+            <q-tab v-for="tab in tabs" :key="tab.name" :name="tab.name" :label="tab.label" />
           </q-tabs>
         </q-toolbar>
 
         <q-page>
-          <router-view @select-order="addOrderTab" />
+          <router-view :key="activeTab" :component="getComponent(activeTab)" @select-order="addOrderTab" />
         </q-page>
 
-     
       </div>
     </q-page-container>
   </q-layout>
@@ -43,11 +37,13 @@ export default {
   setup() {
     const router = useRouter();
     const route = useRoute();
-    const activeTab = ref('applications');
+
     const tabs = ref([
-      { name: 'applications', label: 'Заявки', component: MyApplications, path: '/applications' },
-      { name: 'accounts', label: 'Счета', component: MyAccounts, path: '/accounts' }
+      { name: 'applications', label: 'Заявки', meta: { path: '/applications', component: MyApplications } },
+      { name: 'accounts', label: 'Счета', meta: { path: '/accounts', component: MyAccounts } }
     ]);
+
+    const activeTab = ref(localStorage.getItem('activeTab') || null);
 
     const addOrderTab = ({ orderId, num }) => {
       const existingTab = tabs.value.find(tab => tab.name === `order-${orderId}`);
@@ -58,37 +54,45 @@ export default {
           name: `order-${orderId}`,
           label: `Заявка ${num}`,
           component: OrderDetails,
-          path: `/applications/${orderId}`
+          meta: { path: `/applications/${orderId}`, component: OrderDetails }
         };
         tabs.value.push(newTab);
         activeTab.value = newTab.name;
-        router.push({ path: newTab.path });
+        router.push({ path: newTab.meta.path });
       }
     };
 
     watch(activeTab, (newVal) => {
       const selectedTab = tabs.value.find(tab => tab.name === newVal);
-      if (selectedTab && selectedTab.path && route.path !== selectedTab.path) {
-        router.push({ path: selectedTab.path });
+      if (selectedTab && selectedTab.meta.path && route.path !== selectedTab.meta.path) {
+        router.push({ path: selectedTab.meta.path });
       }
+      localStorage.setItem('activeTab', newVal);
     });
 
     onMounted(() => {
-      const initialTab = tabs.value.find(tab => tab.path === route.path);
+      const initialTab = tabs.value.find(tab => tab.meta.path === route.path);
       if (initialTab) {
         activeTab.value = initialTab.name;
+      } else {
+        activeTab.value = tabs.value[0].name;
+        router.push({ path: tabs.value[0].meta.path });
       }
     });
+
+    const getComponent = (tabName) => {
+      const tab = tabs.value.find(tab => tab.name === tabName);
+      return tab ? tab.meta.component : null;
+    };
 
     return {
       activeTab,
       tabs,
-      addOrderTab
+      addOrderTab,
+      getComponent
     };
   },
 };
 </script>
 
-<style scoped>
-/* Ваши стили здесь */
-</style>
+<style scoped></style>

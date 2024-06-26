@@ -1,12 +1,20 @@
 <template>
   <div class="q-pa-md">
-    <q-table :rows="rows" :columns="columns" row-key="num" :pagination.sync="pagination">
+    <q-table
+      :grid="isMobile"
+      :hide-header="isMobile"
+      :rows="rows"
+      :columns="columns"
+      row-key="num"
+      :pagination.sync="pagination"
+    >
 
       <template v-slot:top>
         <q-td colspan="7">
           <div class="q-table__title">
             <span class="title-text">Список заявок</span>
-            <q-btn class="btn-create" color="primary" @click="openDialog()">Добавить заявку</q-btn>
+            <q-btn class="btn-create" color="primary" @click="openDialog()">
+              {{ isMobile ? '+' : 'Добавить заявку' }}</q-btn>
           </div>
         </q-td>
       </template>
@@ -55,7 +63,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
+import { ref, computed, onMounted, watch, onUnmounted, nextTick } from 'vue';
 import { useStore } from 'vuex';
 import BtnEditDelete from '@/components/BtnEditDelete.vue';
 import DialogDelete from '@/components/DialogDelete.vue';
@@ -108,7 +116,25 @@ export default {
     const dialogMode = ref('create'); // 'create', 'edit', 'delete'
     const nextId = ref(6);
     const pagination = ref({ page: 1, rowsPerPage: 10 }); 
+    const isMobile = ref(window.innerWidth <= 600); 
 
+    const handleResize = () => {
+      isMobile.value = window.innerWidth <= 600;
+      nextTick(() => {
+        const table = document.querySelector('.q-table');
+        if (table && table.__vue__) {
+          table.__vue__.onResize();
+        }
+      });
+    };
+    onMounted(() => {
+      store.dispatch('fetchOrdersList');
+      window.addEventListener('resize', handleResize);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize);
+    });
 
     watch(dialog, (val) => {
       if (!val) closeDialog();
@@ -167,13 +193,11 @@ export default {
     };
 
     const saveItem = (localEditedItem) => {
-      console.log('Saving item (MyApp):', localEditedItem); 
       if (editedIndex.value > -1) {
         Object.assign(rows.value[editedIndex.value], localEditedItem);
       } else {
         store.commit('addNewItem', localEditedItem);
       }
-      console.log('Current rows (MyApp):', rows.value); 
       closeDialog();
     };
 
@@ -189,9 +213,7 @@ export default {
       closeDialog();
     };
 
-    onMounted(() => {
-      store.dispatch('fetchOrdersList');
-    });
+
 
     return {
       columns,
@@ -208,7 +230,8 @@ export default {
       saveItem,
       editItem,
       deleteItem,
-      pagination
+      pagination,
+      isMobile
     };
   }
 };
@@ -268,5 +291,11 @@ tr:hover {
 
 .q-table__title q-btn {
   margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .btn-create {
+    right: 0.5cm;
+  }
 }
 </style>

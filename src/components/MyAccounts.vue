@@ -1,6 +1,13 @@
 <template>
   <div class="q-pa-md">
-    <q-table title="Открытие счетов" :rows="rows" :columns="columns" row-key="num"  >
+    <q-table 
+      title="Открытие счетов" 
+      :rows="rows" 
+      :columns="columns" 
+      row-key="num" 
+      :grid="isMobile"
+      :hide-header="isMobile"
+    >
       <template v-slot:body-cell-meeting_state="props">
         <q-td :props="props" :class="statusClass(props.row.meeting_state)">
           {{ props.row.meeting_state }}
@@ -11,7 +18,7 @@
 </template>
 
 <script>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
 import { useStore } from 'vuex';
 import moment from 'moment';
 
@@ -37,6 +44,27 @@ export default {
     const store = useStore();
     const rows = computed(() => store.state.meetingsList);
 
+    const isMobile = ref(window.innerWidth <= 600);
+
+    const handleResize = () => {
+      isMobile.value = window.innerWidth <= 600;
+      nextTick(() => {
+        const table = document.querySelector('.q-table');
+        if (table && table.__vue__) {
+          table.__vue__.onResize();
+        }
+      });
+    };
+
+    onMounted(() => {
+      store.dispatch('fetchMeetingsList');
+      window.addEventListener('resize', handleResize);
+    });
+
+    onUnmounted(() => {
+      window.removeEventListener('resize', handleResize);
+    });
+
     function statusClass(status) {
       return {
         'status-init': status === 'init',
@@ -47,14 +75,11 @@ export default {
       };
     }
 
-    onMounted(() => {
-      store.dispatch('fetchMeetingsList');
-    });
-
     return {
       columns,
       rows,
       statusClass,
+      isMobile
     };
   }
 };

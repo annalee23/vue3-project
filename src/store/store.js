@@ -18,10 +18,7 @@ export default createStore({
       }));
     },
     addNewItem(state, item) {
-      // state.ordersList.push(item);
-      console.log('Adding new item (Store):', item); // Логирование
       state.ordersList.push(item);
-      console.log('Updated ordersList (Store):', state.ordersList);
     },
     setMeetingsList(state, meetings) {
       state.meetingsList = meetings;
