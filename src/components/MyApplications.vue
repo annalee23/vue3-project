@@ -1,13 +1,7 @@
 <template>
   <div class="q-pa-md">
-    <q-table
-      :grid="isMobile"
-      :hide-header="isMobile"
-      :rows="rows"
-      :columns="columns"
-      row-key="num"
-      :pagination.sync="pagination"
-    >
+    <q-table :grid="isMobile" :hide-header="isMobile" :rows="rows" :columns="columns" row-key="num"
+      :pagination.sync="pagination">
 
       <template v-slot:top>
         <q-td colspan="7">
@@ -115,8 +109,8 @@ export default {
     };
     const dialogMode = ref('create'); // 'create', 'edit', 'delete'
     const nextId = ref(6);
-    const pagination = ref({ page: 1, rowsPerPage: 10 }); 
-    const isMobile = ref(window.innerWidth <= 600); 
+    const pagination = ref({ page: 1, rowsPerPage: 10 });
+    const isMobile = ref(window.innerWidth <= 600);
 
     const handleResize = () => {
       isMobile.value = window.innerWidth <= 600;
@@ -128,7 +122,12 @@ export default {
       });
     };
     onMounted(() => {
-      store.dispatch('fetchOrdersList');
+      const savedOrders = localStorage.getItem('ordersList');
+      if (savedOrders) {
+        store.commit('setOrdersList', JSON.parse(savedOrders));
+      } else {
+        store.dispatch('fetchOrdersList');
+      }
       window.addEventListener('resize', handleResize);
     });
 
@@ -163,6 +162,8 @@ export default {
     };
 
     const openDialog = (item = null, mode = 'create') => {
+      console.log(`Opening dialog (MyApp): mode=${mode}`);
+
       dialogMode.value = mode;
       dialogTitle.value = mode === 'create' ? "Создать заявку" : "Редактировать заявку";
 

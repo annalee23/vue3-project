@@ -43,10 +43,11 @@ export default {
   setup() {
     const order = ref(null);
     const route = useRoute();
-    const id = route.params.id;
+    const activeTab = localStorage.getItem('activeTab');
+    const id = activeTab.split('-')[1];
 
     const fetchOrderDetails = async (id) => {
-      if (parseInt(id) >= 6) {
+      if ((parseInt(id) >= 6) || (activeTab === 'applications') || (activeTab === 'accounts')) {
         order.value = null;
         return;
       }
@@ -54,7 +55,7 @@ export default {
         const response = await axios.get(`https://my-json-server.typicode.com/plushevy/demo/orders/${id}`);
         order.value = response.data;
       } catch (error) {
-        console.error('Ошибка при загрузке данных заявки:', error);
+        console.error('Ошибка при загрузке данных заявки (OrderDetails):', error);
       }
     };
 
