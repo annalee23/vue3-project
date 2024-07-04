@@ -33,10 +33,8 @@
       </template>
 
       <template v-slot:body-cell-num="props">
-        <q-td :props="props">
-          <div @click="selectOrder(props.row.id, props.row.num)" class="clickable">
-            {{ props.row.num }}
-          </div>
+        <q-td :props="props" @click="selectOrder(props.row.id, props.row.num)" class="clickable">
+          <span>{{ props.row.num }}</span>
         </q-td>
       </template>
 
@@ -58,7 +56,7 @@
 
 <script>
 import { ref, computed, onMounted, watch, onUnmounted, nextTick } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '../store/store';
 import BtnEditDelete from '@/components/BtnEditDelete.vue';
 import DialogDelete from '@/components/DialogDelete.vue';
 import DialogEditCreate from '@/components/DialogEditCreate.vue';
@@ -83,7 +81,7 @@ export default {
   props: ['onSelectOrder'],
   setup(props, { emit }) {
     const store = useStore();
-    const rows = computed(() => store.state.ordersList);
+    const rows = computed(() => store.ordersList);
 
     const dialog = ref(false);
     const dialogDelete = ref(false);
@@ -124,9 +122,9 @@ export default {
     onMounted(() => {
       const savedOrders = localStorage.getItem('ordersList');
       if (savedOrders) {
-        store.commit('setOrdersList', JSON.parse(savedOrders));
+        store.setOrdersList(JSON.parse(savedOrders)); 
       } else {
-        store.dispatch('fetchOrdersList');
+        store.fetchOrdersList();
       }
       window.addEventListener('resize', handleResize);
     });
@@ -158,12 +156,11 @@ export default {
     };
 
     const selectOrder = (orderId, num) => {
+      console.log(`Selected order: ${orderId}, number: ${num}`);
       props.onSelectOrder({ orderId, num });
     };
 
     const openDialog = (item = null, mode = 'create') => {
-      console.log(`Opening dialog (MyApp): mode=${mode}`);
-
       dialogMode.value = mode;
       dialogTitle.value = mode === 'create' ? "Создать заявку" : "Редактировать заявку";
 
@@ -197,7 +194,7 @@ export default {
       if (editedIndex.value > -1) {
         Object.assign(rows.value[editedIndex.value], localEditedItem);
       } else {
-        store.commit('addNewItem', localEditedItem);
+        store.addNewItem(localEditedItem);
       }
       closeDialog();
     };
@@ -213,7 +210,6 @@ export default {
       }
       closeDialog();
     };
-
 
 
     return {
@@ -298,5 +294,11 @@ tr:hover {
   .btn-create {
     right: 0.5cm;
   }
+}
+
+.clickable {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #1976d2;
 }
 </style>

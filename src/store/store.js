@@ -1,60 +1,56 @@
-import { createStore } from 'vuex';
+import { defineStore } from 'pinia';
 import axios from 'axios';
 import moment from 'moment';
 
-export default createStore({
-  state() {
-    return {
+export const useStore = defineStore('main', {
+  state: () => ({
       ordersList: [],
       meetingsList: [],
       currentOrder: null
-    };
-  },
-  mutations: {
-    setOrdersList(state, orders) {
-      state.ordersList = orders.map(order => ({
-        ...order,
-        dadd: moment(order.dadd).isValid() ? moment(order.dadd).format('YYYY-MM-DD HH:mm') : 'Invalid date'
-      }));
-    },
-    addNewItem(state, item) {
-      state.ordersList.push(item);
-    },
-    setMeetingsList(state, meetings) {
-      state.meetingsList = meetings;
-    },
-    setCurrentOrder(state, order) {
-      state.currentOrder = order;
-    }
-  },
+  }),
   actions: {
-    async fetchOrdersList({ commit }) {
+    async fetchOrdersList() {
       try {
         const response = await axios.get('https://my-json-server.typicode.com/plushevy/demo/list');
-        commit('setOrdersList', response.data);
+        this.setOrdersList(response.data);
       } catch (error) {
         console.error('Ошибка при загрузке списка заявок:', error);
         throw error;
       }
     },
-    async fetchMeetingsList({ commit }) {
+    async fetchMeetingsList() {
       try {
         const response = await axios.get('https://my-json-server.typicode.com/plushevy/demo/meetings');
-        commit('setMeetingsList', response.data);
+        this.setMeetingsList(response.data);
       } catch (error) {
         console.error('Ошибка при загрузке списка встреч:', error);
         throw error;
       }
     },
-    async fetchOrderDetails({ commit }, orderId) {
+    async fetchOrderDetails(orderId) {
       try {
         const response = await axios.get(`https://my-json-server.typicode.com/plushevy/demo/orders/${orderId}`);
         console.log('Orders details loaded:', response.data);
-        commit('setCurrentOrder', response.data);
+        this.setCurrentOrder(response.data);
       } catch (error) {
         console.error('Ошибка при загрузке данных заявки:', error);
         throw error;
       }
+    },
+    setOrdersList(orders) {
+      this.ordersList = orders.map(order => ({
+        ...order,
+        dadd: moment(order.dadd).isValid() ? moment(order.dadd).format('YYYY-MM-DD HH:mm') : 'Invalid date'
+      }));
+    },
+    addNewItem(item) {
+      this.ordersList.push(item);
+    },
+    setMeetingsList(meetings) {
+      this.meetingsList = meetings;
+    },
+    setCurrentOrder(order) {
+      this.currentOrder = order;
     }
   }
 });

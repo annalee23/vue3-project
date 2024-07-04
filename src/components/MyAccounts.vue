@@ -19,7 +19,7 @@
 
 <script>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue';
-import { useStore } from 'vuex';
+import { useStore } from '../store/store';
 import moment from 'moment';
 
 const columns = [
@@ -42,7 +42,7 @@ const columns = [
 export default {
   setup() {
     const store = useStore();
-    const rows = computed(() => store.state.meetingsList);
+    const rows = computed(() => store.meetingsList);
 
     const isMobile = ref(window.innerWidth <= 600);
 
@@ -57,7 +57,7 @@ export default {
     };
 
     onMounted(() => {
-      store.dispatch('fetchMeetingsList');
+      store.fetchMeetingsList();
       window.addEventListener('resize', handleResize);
     });
 
