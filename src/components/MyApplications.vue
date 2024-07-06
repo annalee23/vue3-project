@@ -144,14 +144,12 @@ export default {
         }
       });
     };
+
     onMounted(() => {
-      const savedOrders = localStorage.getItem('ordersList');
-      if (savedOrders) {
-        store.setOrdersList(JSON.parse(savedOrders));
-      } else {
+      if (!rows.value.length) {
         store.fetchOrdersList();
       }
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
     });
 
     onUnmounted(() => {
