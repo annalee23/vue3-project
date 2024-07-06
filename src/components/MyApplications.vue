@@ -1,7 +1,12 @@
 <template>
   <div class="q-pa-md">
-    <q-table :grid="isMobile" :hide-header="isMobile" :rows="rows" :columns="columns" row-key="num"
-      :pagination.sync="pagination">
+    <q-table 
+     :grid="isMobile" 
+     :hide-header="isMobile" 
+     :rows="rows" 
+     :columns="columns" 
+     row-key="num"
+     :pagination.sync="pagination">
 
       <template v-slot:top>
         <q-td colspan="7">
@@ -26,12 +31,6 @@
         </q-td>
       </template>
 
-      <template v-slot:body-cell-dadd="props">
-        <q-td :props="props">
-          <span>{{ formatDate(props.row.dadd) }}</span>
-        </q-td>
-      </template>
-
       <template v-slot:body-cell-num="props">
         <q-td :props="props" @click="selectOrder(props.row.id, props.row.num)" class="clickable">
           <span>{{ props.row.num }}</span>
@@ -42,6 +41,32 @@
         <q-td :props="props">
           <BtnEditDelete :item="props.row" @edit="editItem" @delete="openDialog(props.row, 'delete')" />
         </q-td>
+      </template>
+
+
+      <template v-slot:item="props">
+        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+          <q-card class="q-pa-md" bordered flat>
+            <q-list dense>
+              <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.label">
+                <q-item-section>
+                  <q-item-label>{{ col.label }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-item-label v-if="col.label === 'Продукт'">{{ col.value[0] }}</q-item-label>
+                  <q-item-label v-else-if="col.label === '№ Заявки'" @click="selectOrder(props.row.id, props.row.num)"
+                    class="clickable">{{ col.value }}</q-item-label>
+                  <q-item-label v-else-if="col.label === 'Статус'" :class="statusClass(col.value)">{{ col.value
+                    }}</q-item-label>
+                  <q-item-label v-else-if="col.label === 'Действия'">
+                    <BtnEditDelete :item="props.row" @edit="editItem" @delete="openDialog(props.row, 'delete')" />
+                  </q-item-label>
+                  <q-item-label v-else>{{ col.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card>
+        </div>
       </template>
 
     </q-table>
@@ -122,7 +147,7 @@ export default {
     onMounted(() => {
       const savedOrders = localStorage.getItem('ordersList');
       if (savedOrders) {
-        store.setOrdersList(JSON.parse(savedOrders)); 
+        store.setOrdersList(JSON.parse(savedOrders));
       } else {
         store.fetchOrdersList();
       }
@@ -191,10 +216,12 @@ export default {
     };
 
     const saveItem = (localEditedItem) => {
+      console.log("Save");
       if (editedIndex.value > -1) {
         Object.assign(rows.value[editedIndex.value], localEditedItem);
       } else {
         store.addNewItem(localEditedItem);
+        console.log(store.ordersList);
       }
       closeDialog();
     };
