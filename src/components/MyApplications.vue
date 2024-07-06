@@ -214,12 +214,10 @@ export default {
     };
 
     const saveItem = (localEditedItem) => {
-      console.log("Save");
       if (editedIndex.value > -1) {
         Object.assign(rows.value[editedIndex.value], localEditedItem);
       } else {
         store.addNewItem(localEditedItem);
-        console.log(store.ordersList);
       }
       closeDialog();
     };

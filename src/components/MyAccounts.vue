@@ -13,6 +13,29 @@
           {{ props.row.meeting_state }}
         </q-td>
       </template>
+
+      <template v-slot:item="props">
+        <div class="q-pa-xs col-xs-12 col-sm-6 col-md-4 col-lg-3 grid-style-transition">
+          <q-card class="q-pa-md" bordered flat>
+            <q-list dense>
+              <q-item v-for="col in props.cols.filter(col => col.name !== 'desc')" :key="col.label">
+                <q-item-section>
+                  <q-item-label>{{ col.label }}</q-item-label>
+                </q-item-section>
+                <q-item-section side>
+                  <q-item-label v-if="col.label === 'Статус'" :class="statusClass(col.value)">{{ col.value
+                    }}</q-item-label>
+                  <q-item-label v-else-if="col.label === 'Клиент'" style="max-width: 185px;">{{ col.value
+                    }}</q-item-label>
+                  <q-item-label v-else>{{ col.value }}</q-item-label>
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card>
+        </div>
+      </template>
+
+
       </q-table>
   </div>
 </template>
