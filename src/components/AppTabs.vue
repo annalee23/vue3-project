@@ -43,12 +43,19 @@ export default {
     const router = useRouter();
     const route = useRoute();
 
-    const tabs = ref([
+    const defaultTabs = [
       { name: 'applications', label: 'Заявки', meta: { path: '/applications', component: MyApplications } },
       { name: 'accounts', label: 'Счета', meta: { path: '/accounts', component: MyAccounts } }
-    ]);
+    ];
 
-    const activeTab = ref(localStorage.getItem('activeTab') || null);
+    const storedTabs = JSON.parse(localStorage.getItem('tabs')) || defaultTabs;
+    const tabs = ref(storedTabs);
+
+    const activeTab = ref(localStorage.getItem('activeTab') || (storedTabs.length > 0 ? storedTabs[0].name : null));
+
+    const saveTabsToLocalStorage = () => {
+      localStorage.setItem('tabs', JSON.stringify(tabs.value));
+    };
 
     const addOrderTab = ({ orderId, num }) => {
       const existingTab = tabs.value.find(tab => tab.name === `order-${orderId}`);
@@ -64,6 +71,7 @@ export default {
         tabs.value.push(newTab);
         activeTab.value = newTab.name;
         router.push({ path: newTab.meta.path });
+        saveTabsToLocalStorage();
       }
     };
 
@@ -71,6 +79,7 @@ export default {
       const index = tabs.value.findIndex(tab => tab.name === tabName);
       if (index !== -1) {
         tabs.value.splice(index, 1);
+        saveTabsToLocalStorage();
         if (tabName === activeTab.value) {
           const defaultTab = tabs.value.length > 0 ? tabs.value[0].name : null;
           activeTab.value = defaultTab;
@@ -92,9 +101,12 @@ export default {
     });
 
     onMounted(() => {
-      const initialTab = tabs.value.find(tab => tab.meta.path === route.path);
+      const storedActiveTab = localStorage.getItem('activeTab');
+      const initialTab = tabs.value.find(tab => tab.name === storedActiveTab);
+      
       if (initialTab) {
         activeTab.value = initialTab.name;
+        router.push({ path: initialTab.meta.path });
       } else {
         activeTab.value = tabs.value[0].name;
         router.push({ path: tabs.value[0].meta.path });
