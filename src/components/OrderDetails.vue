@@ -67,7 +67,6 @@ export default {
         console.error('Ошибка при загрузке данных заявки (OrderDetails):', error);
       }
       }
-      
     };
 
     return {

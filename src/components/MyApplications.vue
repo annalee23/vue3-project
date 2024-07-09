@@ -179,7 +179,7 @@ export default {
     };
 
     const selectOrder = (orderId, num) => {
-      console.log(`Selected order: ${orderId}, number: ${num}`);
+      // console.log(`Selected order: ${orderId}, number: ${num}`);
       props.onSelectOrder({ orderId, num });
     };
 

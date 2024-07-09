@@ -23,10 +23,12 @@ export const useStore = defineStore("main", () => {
 
   const fetchMeetingsList = async () => {
     try {
-      const response = await axios.get(
-        "https://my-json-server.typicode.com/plushevy/demo/meetings"
-      );
-      setMeetingsList(response.data);
+      if (!meetingsList.value.length) {
+        const response = await axios.get(
+          "https://my-json-server.typicode.com/plushevy/demo/meetings"
+        );
+        setMeetingsList(response.data);
+      }
     } catch (error) {
       console.error("Ошибка при загрузке списка встреч:", error);
       throw error;
@@ -40,7 +42,6 @@ export const useStore = defineStore("main", () => {
         const response = await axios.get(
           `https://my-json-server.typicode.com/plushevy/demo/orders/${orderId}`
         );
-        // console.log("NEW JSON RESPONSE");
         orderDetails = response.data;
         DetailsList.value.push(orderDetails);
       }

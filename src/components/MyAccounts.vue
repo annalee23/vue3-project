@@ -1,13 +1,7 @@
 <template>
   <div class="q-pa-md">
-    <q-table 
-      title="Открытие счетов" 
-      :rows="rows" 
-      :columns="columns" 
-      row-key="num" 
-      :grid="isMobile"
-      :hide-header="isMobile"
-    >
+    <q-table title="Открытие счетов" :rows="rows" :columns="columns" row-key="num" :grid="isMobile"
+      :hide-header="isMobile">
       <template v-slot:body-cell-meeting_state="props">
         <q-td :props="props" :class="statusClass(props.row.meeting_state)">
           {{ props.row.meeting_state }}
@@ -34,9 +28,7 @@
           </q-card>
         </div>
       </template>
-
-
-      </q-table>
+    </q-table>
   </div>
 </template>
 
@@ -80,7 +72,9 @@ export default {
     };
 
     onMounted(() => {
-      store.fetchMeetingsList();
+      if (!store.meetingsList.length) {
+        store.fetchMeetingsList();
+      }
       window.addEventListener('resize', handleResize);
     });
 
