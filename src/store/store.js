@@ -7,6 +7,7 @@ export const useStore = defineStore("main", () => {
   const ordersList = ref([]);
   const meetingsList = ref([]);
   const currentOrder = ref(null);
+  const DetailsList = ref([]);
 
   const fetchOrdersList = async () => {
     try {
@@ -34,11 +35,16 @@ export const useStore = defineStore("main", () => {
 
   const fetchOrderDetails = async (orderId) => {
     try {
-      const response = await axios.get(
-        "https://my-json-server.typicode.com/plushevy/demo/orders/${orderId}"
-      );
-      console.log("Orders details loaded:", response.data);
-      setCurrentOrder(response.data);
+      let orderDetails = DetailsList.value.find((item) => item.id === orderId);
+      if (!orderDetails) {
+        const response = await axios.get(
+          `https://my-json-server.typicode.com/plushevy/demo/orders/${orderId}`
+        );
+        // console.log("NEW JSON RESPONSE");
+        orderDetails = response.data;
+        DetailsList.value.push(orderDetails);
+      }
+      setCurrentOrder(orderDetails);
     } catch (error) {
       console.error("Ошибка при загрузке данных заявки:", error);
       throw error;
@@ -70,6 +76,7 @@ export const useStore = defineStore("main", () => {
     ordersList,
     meetingsList,
     currentOrder,
+    DetailsList,
     fetchOrdersList,
     fetchMeetingsList,
     fetchOrderDetails,

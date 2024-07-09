@@ -36,28 +36,17 @@
 <script>
 import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import axios from 'axios';
 import moment from 'moment';
+import { useStore } from '@/store/store';
+
 
 export default {
   setup() {
+    const store = useStore();
     const order = ref(null);
     const route = useRoute();
     const activeTab = localStorage.getItem('activeTab');
     const id = activeTab.split('-')[1];
-
-    const fetchOrderDetails = async (id) => {
-      if ((parseInt(id) >= 6) || (activeTab === 'applications') || (activeTab === 'accounts')) {
-        order.value = null;
-        return;
-      }
-      try {
-        const response = await axios.get(`https://my-json-server.typicode.com/plushevy/demo/orders/${id}`);
-        order.value = response.data;
-      } catch (error) {
-        console.error('Ошибка при загрузке данных заявки (OrderDetails):', error);
-      }
-    };
 
     const formatDate = (date) => {
       return moment(date).format('DD.MM.YYYY HH:mm');
@@ -68,6 +57,18 @@ export default {
     onMounted(() => {
       fetchOrderDetails(id);
     });
+
+    const fetchOrderDetails = async (id) => {
+      if ((activeTab != 'applications') && (activeTab !='accounts')){
+        try {
+        await store.fetchOrderDetails(id);
+        order.value = store.currentOrder;
+      } catch (error) {
+        console.error('Ошибка при загрузке данных заявки (OrderDetails):', error);
+      }
+      }
+      
+    };
 
     return {
       order,
