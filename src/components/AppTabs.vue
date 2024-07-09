@@ -5,7 +5,12 @@
         <q-toolbar class="bg-purple text-white shadow-2 rounded-borders">
           <q-space />
           <q-tabs v-model="activeTab" shrink stretch>
-            <q-tab v-for="tab in tabs" :key="tab.name" :name="tab.name" :label="tab.label" />
+            <q-tab v-for="tab in tabs" :key="tab.name" :name="tab.name">
+              <div class="tab-content">
+                <span class="tab-label">{{ tab.label }}</span>
+                <q-icon v-if="tab.meta.isOrderDetail" name="close" class="cursor-pointer close-icon" @click.stop="closeTab(tab.name)" />
+              </div>
+            </q-tab>
           </q-tabs>
         </q-toolbar>
 
@@ -54,11 +59,27 @@ export default {
           name: `order-${orderId}`,
           label: `Заявка ${num}`,
           component: OrderDetails,
-          meta: { path: `/applications/${orderId}`, component: OrderDetails }
+          meta: { path: `/applications/${orderId}`, component: OrderDetails, isOrderDetail: true }
         };
         tabs.value.push(newTab);
         activeTab.value = newTab.name;
         router.push({ path: newTab.meta.path });
+      }
+    };
+
+    const closeTab = (tabName) => {
+      const index = tabs.value.findIndex(tab => tab.name === tabName);
+      if (index !== -1) {
+        tabs.value.splice(index, 1);
+        if (tabName === activeTab.value) {
+          const defaultTab = tabs.value.length > 0 ? tabs.value[0].name : null;
+          activeTab.value = defaultTab;
+          if (defaultTab) {
+            router.push({ path: tabs.value[0].meta.path });
+          } else {
+            router.push('/');
+          }
+        }
       }
     };
 
@@ -89,10 +110,29 @@ export default {
       activeTab,
       tabs,
       addOrderTab,
-      getComponent
+      getComponent,
+      closeTab
     };
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.tab-content {
+  display: flex;
+  align-items: center;
+}
+
+.tab-label {
+  font-weight: bold;
+  margin-right: 10px; 
+}
+
+.close-icon {
+  margin-left: auto; 
+}
+</style>
