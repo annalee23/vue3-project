@@ -26,11 +26,9 @@
 <script>
 import { ref, watch, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { markRaw } from 'vue';
-
-const MyApplications = markRaw(require('@/components/MyApplications.vue').default);
-const MyAccounts = markRaw(require('@/components/MyAccounts.vue').default);
-const OrderDetails = markRaw(require('@/components/OrderDetails.vue').default);
+import MyApplications from '@/components/MyApplications.vue';
+import MyAccounts from '@/components/MyAccounts.vue';
+import OrderDetails from '@/components/OrderDetails.vue';
 
 
 export default {
